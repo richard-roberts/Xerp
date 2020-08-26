@@ -7,6 +7,81 @@ import scipy.linalg
 np.set_printoptions(precision=4, suppress=True)
 
 
+class LeeColors:
+
+    @classmethod    
+    def test_lee_colors(cls):
+        print("should be 0", cls.euler_to_color(-np.pi))
+        print("should be 255", cls.euler_to_color(np.pi))
+        print("should be 127", cls.euler_to_color(0))
+        print("should be -3.141", cls.color_to_euler(0))
+        print("should be 3.141", cls.color_to_euler(255))
+        print("should be 0", cls.color_to_euler(127))
+        print("should be 0", cls.euler_to_color(cls.color_to_euler(0)))
+        print("should be 255", cls.euler_to_color(cls.color_to_euler(255)))
+        print("should be 127", cls.euler_to_color(cls.color_to_euler(127)))
+        print("should be -3.141", cls.color_to_euler(cls.euler_to_color(-np.pi)))
+        print("should be 3.141", cls.color_to_euler(cls.euler_to_color(np.pi)))
+        print("should be 0", cls.color_to_euler(cls.euler_to_color(0)))
+    
+    @classmethod
+    def euler_to_color(cls, e):
+        # assuming euler is -pi .. pi
+        v = (e + np.pi) / (2 * np.pi)
+        return v * 255.0
+        
+    @classmethod
+    def color_to_euler(cls, c):
+        # assuming euler is -pi .. pi
+        v = float(c / 255.0)
+        e = (v * 2 * np.pi) - np.pi
+        return e
+    
+    @classmethod
+    def euler3_to_rgb(cls, euler3):
+        rgb = [
+            cls.euler_to_color(v)
+            for v in euler3
+        ]
+        return rgb
+
+    @classmethod
+    def rgb_to_euler3(cls, rgb):
+        euler3 = [
+            cls.color_to_euler(v)
+            for v in rgb
+        ]
+        return euler3
+
+    @classmethod
+    def scale_to_color(cls, scale):
+        # assuming scale is -1 .. 1
+        v = (scale + 1.0) / 2.0
+        return v * 255.0
+
+    @classmethod
+    def color_to_scale(cls, color):
+        # assuming scale is -1 .. 1
+        v = color / 255.0
+        s = (v * 2.0) - 1.0
+        return s 
+
+    @classmethod
+    def scale3_to_rgb(cls, scale3):
+        rgb = [
+            cls.scale_to_color(v)
+            for v in scale3
+        ]
+        return rgb
+
+    @classmethod
+    def rgb_to_scale3(cls, scale3):
+        rgb = [
+            cls.color_to_scale(v)
+            for v in scale3
+        ]
+        return rgb
+        
 class LeeAffine:
 
     @classmethod
