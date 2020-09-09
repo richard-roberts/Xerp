@@ -23,7 +23,7 @@ class ScatteredDataInterpolation:
         denom = 2 * np.power(self.sigma, 2)
         return np.exp(numer / denom)
 
-    def interpolate(self, pose):
+    def interpolate_one(self, pose):
         vs = []
         for s in self.source:
             dist = np.linalg.norm(pose - s)
@@ -31,3 +31,27 @@ class ScatteredDataInterpolation:
 
         result = np.matrix(vs) * self.weights
         return result.tolist()[0]
+
+    def interpolate_many(self, poses):
+        m = []
+        for pose in poses:
+            row = []
+            for s in self.source:
+                dist = np.linalg.norm(pose - s)
+                row.append(self.kernel(dist))
+            m.append(row)
+
+        result = np.matrix(m) * self.weights
+        return result   
+
+    def interpolate_many_fast(self, poses):
+        n_s = len(self.source)
+        n_p = len(poses)
+        P = np.array([poses,] * n_s).transpose((1, 0, 2))
+        S = np.array([self.source,] * n_p)
+        PS = P - S
+        normed = np.sqrt((PS * PS).sum(axis=2))
+        guass = np.exp(-np.power(normed, 2) / (2 * np.power(self.sigma, 2)))
+        result = np.matrix(guass) * self.weights
+        return result.tolist()
+    
